@@ -1,0 +1,13 @@
+body {
+    height: 100vh;
+    background-color: aqua;
+}
+
+h1,h2 { text-align: center;}
+
+.calendar-container {
+    background-color: red;
+    height: 60vh;
+    width: 80%;
+    margin: auto;
+}

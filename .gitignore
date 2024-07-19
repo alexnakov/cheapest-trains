@@ -1,2 +1,4 @@
-.env
 venv
+.env
+server/data.json
+server/firebase_key.json
