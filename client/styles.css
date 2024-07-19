@@ -1,13 +1,18 @@
 body {
-    height: 100vh;
-    background-color: aqua;
+  height: 100vh;
+  background-color: aqua;
 }
 
 h1,h2 { text-align: center;}
 
 .calendar-container {
-    background-color: red;
-    height: 60vh;
-    width: 80%;
-    margin: auto;
+  background-color: red;
+  height: 60vh;
+  width: 80%;
+  margin: auto;
+}
+
+.btns-month-container {
+  background-color: blueviolet;
+  height: 7vh;
 }
