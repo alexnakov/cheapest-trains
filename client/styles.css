@@ -47,6 +47,7 @@ table td > div {
   width: 95%;
   height: 46.5%;
   border: 1px solid black;
+  line-height: 32px;
 }
 
 td {
