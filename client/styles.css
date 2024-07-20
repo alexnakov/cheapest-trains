@@ -16,3 +16,43 @@ h1,h2 { text-align: center;}
   background-color: blueviolet;
   height: 7vh;
 }
+
+.days-container {
+  width: 100%;
+  height: 100%;
+}
+
+table {
+  table-layout: fixed;
+  height: 87.5%;
+  width: 100%;
+}
+
+table td {
+  text-align: center;
+  vertical-align: top;
+  overflow: hidden;
+  position: relative;
+}
+
+table td > div {
+  position: absolute;
+  width: 90%;
+  height: 45%;
+  border: 1px solid black;
+}
+
+table td > div {
+  position: absolute;
+  width: 90%;
+  height: 45%;
+  border: 1px solid black;
+}
+
+td {
+  border: 1px solid yellow;
+}
+
+table td :nth-child(2) {
+  top: 45%
+}
