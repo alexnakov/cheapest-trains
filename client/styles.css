@@ -44,8 +44,8 @@ table td > div {
 
 table td > div {
   position: absolute;
-  width: 90%;
-  height: 45%;
+  width: 95%;
+  height: 46.5%;
   border: 1px solid black;
 }
 
@@ -54,5 +54,5 @@ td {
 }
 
 table td :nth-child(2) {
-  top: 45%
+  top: 50%
 }
