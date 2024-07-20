@@ -14,7 +14,13 @@ function formatDate(date) {
   
     // Construct the formatted date string
     return day + '/' + month + '/' + year;
-  }
+}
+
+function isSameDate(date1, date2) {
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+}
 
 const now = new Date()
 
@@ -32,9 +38,18 @@ if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
 
 const allTDtagsTop = document.querySelectorAll(`td>div.date`)
 
+const todaysDate = new Date()
+
 for (let i=0; i<allTDtagsTop.length; i++) {
   let strDate = formatDate(now)
   allTDtagsTop[i].textContent = strDate
+
+  // If the current date is today, the background is painted
+  // aqua to show that.
+  if (isSameDate(todaysDate, now)) {
+    allTDtagsTop[i].style.backgroundColor = `aqua`;
+  }
+
   now.setDate(now.getDate() + 1)
 }
 
