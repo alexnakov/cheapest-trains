@@ -1,4 +1,5 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const now = new Date() // Date obj upon loading the page
 
 function formatDate(date) {
     // Extract the day, month, and year from the date object
@@ -22,45 +23,50 @@ function isSameDate(date1, date2) {
          date1.getDate() === date2.getDate();
 }
 
-const now = new Date()
-
-console.log("Now is " + now.toDateString())
-
-const currentMonth = now.getMonth() //  Month of the year 0 - 11
-
-now.setDate(1) // Set the day the 1st of the month
-
-const dayOfTheWeek1st = now.getDay() //  Day of the week 0 - 6 [Sunday 0, Monday 1]
-
-if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
-    now.setDate(now.getDate() - (dayOfTheWeek1st - 1))
+function setMonthText(monthString) {
+  const monthEl = document.getElementById(`current-month`)
+  monthEl.textContent = monthString
 }
 
-const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+function set1stMonthOnCalendar(nowDate) {
+  /*
+  Params: Initial Date object upon loading the page.
+  */
 
-const todaysDate = new Date()
+  nowDate.setDate(1) // Set the day the 1st of the month
 
-for (let i=0; i<allTDtagsTop.length; i++) {
-  let strDate = formatDate(now)
-  allTDtagsTop[i].textContent = strDate
+  const dayOfTheWeek1st = nowDate.getDay() //  Day of the week 0 - 6 [Sunday 0, Monday 1]
 
-  // If the current date is today, the background is painted
-  // aqua to show that.
-  if (isSameDate(todaysDate, now)) {
-    allTDtagsTop[i].style.backgroundColor = `aqua`;
+  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
+    nowDate.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
   }
 
-  now.setDate(now.getDate() + 1)
+  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+  const todaysDate = new Date()
+
+  for (let i=0; i<allTDtagsTop.length; i++) {
+    let strDate = formatDate(nowDate)
+    allTDtagsTop[i].textContent = strDate
+
+    // If the current date is today, the background is painted
+    // aqua to show that.
+    if (isSameDate(todaysDate, nowDate)) {
+      allTDtagsTop[i].style.backgroundColor = `aqua`;
+    }
+    nowDate.setDate(nowDate.getDate() + 1)
+  }
 }
 
+window.onload = set1stMonthOnCalendar(now)
 
 // BUTTONS functions
 
 function forwardMonthBtn() {
-  const currentMonthDatetime = new Date().getMonth() // 0 to 11
-  const calendarTableCurrentMonth = document.getElementById(`current-month`)
-  console.log(monthsArray[currentMonthDatetime])
-  console.log(calendarTableCurrentMonth.textContent)
+  const calendarTableCurrentMonth = document.getElementById(`current-month`).textContent
+  const monthIndex = monthsArray.findIndex(calendarTableCurrentMonth)
+  const dateObj1MonthAheadOn1st = new Date(2024,monthIndex+1,1)
+
+  
 }
 
 
