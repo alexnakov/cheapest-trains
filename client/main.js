@@ -54,4 +54,15 @@ for (let i=0; i<allTDtagsTop.length; i++) {
 }
 
 
+// BUTTONS functions
+
+function forwardMonthBtn() {
+  const currentMonthDatetime = new Date().getMonth() // 0 to 11
+  const calendarTableCurrentMonth = document.getElementById(`current-month`)
+  console.log(monthsArray[currentMonthDatetime])
+  console.log(calendarTableCurrentMonth.textContent)
+}
+
+
+
 
