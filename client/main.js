@@ -120,7 +120,3 @@ function prevMonth() {
 // IF NAME == MAIN
 
 window.onload = setCalendarTable(selectedDate)
-
-
-
-
