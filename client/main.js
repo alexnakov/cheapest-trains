@@ -1,5 +1,5 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-var selectedMonth = new Date() // Date obj upon loading the page
+var selectedDate = new Date() // Date obj upon loading the page
 var monthNeedle = 0 // Used to not allow previous than current month movement.
 
 // UTILITIES FUNCTIONS
@@ -29,8 +29,8 @@ function isSameDate(date1, date2) {
 // GETTERS AND SETTERS
 
 function moveMonth(numberOfMonths) {
-  selectedMonth.setDate(1)
-  selectedMonth.setMonth(selectedMonth.getMonth() + numberOfMonths)
+  selectedDate.setDate(1)
+  selectedDate.setMonth(selectedDate.getMonth() + numberOfMonths)
   monthNeedle += numberOfMonths
 }
 
@@ -39,6 +39,11 @@ function moveMonth(numberOfMonths) {
 function setMonthText(monthString) {
   const monthEl = document.getElementById(`current-month`)
   monthEl.textContent = monthString
+}
+
+function setYearText(yearInterger) {
+  const yearEl = document.getElementById(`current-year`)
+  yearEl.textContent = String(yearInterger)
 }
 
 function setCalendarTable(date) {
@@ -91,8 +96,9 @@ const prevMonthBtn = document.getElementById(`prev-month-btn`)
 function nextMonth() {
   moveMonth(1)
   clearSpecialDays() // This must be before the next line
-  setCalendarTable(selectedMonth)
-  setMonthText(monthsArray[selectedMonth.getMonth()])
+  setCalendarTable(selectedDate)
+  setMonthText(monthsArray[selectedDate.getMonth()])
+  setYearText(selectedDate.getFullYear())
 
   if (monthNeedle == 3) {
     nextMonthBtn.setAttribute('disabled','true')
@@ -103,8 +109,9 @@ function nextMonth() {
 function prevMonth() {
   moveMonth(-1)
   clearSpecialDays() // This must be before the next line
-  setCalendarTable(selectedMonth)
-  setMonthText(monthsArray[selectedMonth.getMonth()])
+  setCalendarTable(selectedDate)
+  setMonthText(monthsArray[selectedDate.getMonth()])
+  setYearText(selectedDate.getFullYear())
 
   prevMonthBtn.disabled = true ? monthNeedle == 0 : false;
   nextMonthBtn.disabled = false
@@ -112,7 +119,7 @@ function prevMonth() {
 
 // IF NAME == MAIN
 
-window.onload = setCalendarTable(selectedMonth)
+window.onload = setCalendarTable(selectedDate)
 
 
 
