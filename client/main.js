@@ -39,8 +39,12 @@ function setCalendarTable(monthAndYear) {
   const dateObjPassed = new Date(monthAndYear[1], monthAndYear[0], 1)
   const dayOfTheWeek1st = dateObjPassed.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
 
-  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
-    dateObjPassed.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
+  console.log(dayOfTheWeek1st)
+
+  if (dayOfTheWeek1st - 1 > 0) { // i.e if its NOT monday
+    dateObjPassed.setDate(dateObjPassed.getDate() - (dayOfTheWeek1st - 1))
+  } else if (dayOfTheWeek1st - 1 < 0) {
+    dateObjPassed.setDate(dateObjPassed.getDate() + (dayOfTheWeek1st - 1))
   }
 
   const todaysDate = new Date()
@@ -54,7 +58,10 @@ function setCalendarTable(monthAndYear) {
     // aqua to show that.
     if (isSameDate(todaysDate, dateObjPassed)) {
       allTDtagsTop[i].style.backgroundColor = `aqua`;
+    } else if (dateObjPassed.getDate() == 1 && dateObjPassed.getMonth() == monthAndYear[0]) {
+      allTDtagsTop[i].style.backgroundColor = `orange`;
     }
+
     dateObjPassed.setDate(dateObjPassed.getDate() + 1)
   }
 }
@@ -70,7 +77,9 @@ function nextMonthOn1st(monthAndYear) {
   console.log(date1)
 }
 
-window.onload = setCalendarTable(currentMonthAndYear)
+let nextMonthDateObj = new Date(2024, 1, 3)
+let a = [nextMonthDateObj.getMonth(), nextMonthDateObj.getFullYear()]
+window.onload = setCalendarTable(a)
 
 // BUTTONS functions
 
