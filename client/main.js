@@ -76,7 +76,11 @@ function setCalendarTable(date) {
 
 // BUTTONS
 
-
+function nextMonth() {
+  moveMonth(1)
+  setCalendarTable(selectedMonth)
+  setMonthText(monthsArray[selectedMonth.getMonth()])
+}
 
 // IF NAME == MAIN
 
