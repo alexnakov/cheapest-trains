@@ -1,6 +1,9 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const now = new Date() // Date obj upon loading the page
 
+// This varible will be my 'state'
+var currentMonthAndYear = [now.getMonth(), now.getFullYear()]
+
 function formatDate(date) {
     // Extract the day, month, and year from the date object
     let day = date.getDate();
@@ -63,11 +66,15 @@ window.onload = set1stMonthOnCalendar(now)
 
 function forwardMonthBtn() {
   const calendarTableCurrentMonth = document.getElementById(`current-month`).textContent
-  const monthIndex = monthsArray.findIndex(calendarTableCurrentMonth)
+  
+  const monthIndex = monthsArray.indexOf(calendarTableCurrentMonth)
   const dateObj1MonthAheadOn1st = new Date(2024,monthIndex+1,1)
 
-  
+  console.log(monthIndex)
+  console.log(dateObj1MonthAheadOn1st)
 }
+
+forwardMonthBtn()
 
 
 
