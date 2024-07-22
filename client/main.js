@@ -1,5 +1,6 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 var selectedMonth = new Date() // Date obj upon loading the page
+var monthNeedle = 0 // Used to not allow previous than current month movement.
 
 // UTILITIES FUNCTIONS
 
@@ -30,6 +31,7 @@ function isSameDate(date1, date2) {
 function moveMonth(numberOfMonths) {
   selectedMonth.setDate(1)
   selectedMonth.setMonth(selectedMonth.getMonth() + numberOfMonths)
+  monthNeedle += numberOfMonths
 }
 
 // UI UPDATE FUNCTIONS
@@ -83,11 +85,17 @@ function clearSpecialDays() {
 
 // BUTTONS
 
+const nextMonthBtn = document.getElementById(`next-month-btn`)
+const prevMonthBtn = document.getElementById(`prev-month-btn`)
+
 function nextMonth() {
   moveMonth(1)
   clearSpecialDays() // This must be before the next line
   setCalendarTable(selectedMonth)
   setMonthText(monthsArray[selectedMonth.getMonth()])
+  
+  monthNeedle++
+  prevMonthBtn.removeAttribute('disabled')
 }
 
 function prevMonth() {
@@ -95,6 +103,9 @@ function prevMonth() {
   clearSpecialDays() // This must be before the next line
   setCalendarTable(selectedMonth)
   setMonthText(monthsArray[selectedMonth.getMonth()])
+
+  monthNeedle--
+  prevMonthBtn.disabled = true ? monthNeedle == 0 : false;
 }
 
 // IF NAME == MAIN
