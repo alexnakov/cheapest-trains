@@ -1,4 +1,8 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var selectedDate = new Date() // Date obj upon loading the page
+var monthNeedle = 0 // Used to not allow previous than current month movement.
+
+// UTILITIES FUNCTIONS
 
 function formatDate(date) {
     // Extract the day, month, and year from the date object
@@ -22,34 +26,97 @@ function isSameDate(date1, date2) {
          date1.getDate() === date2.getDate();
 }
 
-const now = new Date()
+// GETTERS AND SETTERS
 
-console.log("Now is " + now.toDateString())
-
-const currentMonth = now.getMonth() //  Month of the year 0 - 11
-
-now.setDate(1) // Set the day the 1st of the month
-
-const dayOfTheWeek1st = now.getDay() //  Day of the week 0 - 6 [Sunday 0, Monday 1]
-
-if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
-    now.setDate(now.getDate() - (dayOfTheWeek1st - 1))
+function moveMonth(numberOfMonths) {
+  selectedDate.setDate(1)
+  selectedDate.setMonth(selectedDate.getMonth() + numberOfMonths)
+  monthNeedle += numberOfMonths
 }
 
-const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+// UI UPDATE FUNCTIONS
 
-const todaysDate = new Date()
+function setMonthText(monthString) {
+  const monthEl = document.getElementById(`current-month`)
+  monthEl.textContent = monthString
+}
 
-for (let i=0; i<allTDtagsTop.length; i++) {
-  let strDate = formatDate(now)
-  allTDtagsTop[i].textContent = strDate
+function setYearText(yearInterger) {
+  const yearEl = document.getElementById(`current-year`)
+  yearEl.textContent = String(yearInterger)
+}
 
-  // If the current date is today, the background is painted
-  // aqua to show that.
-  if (isSameDate(todaysDate, now)) {
-    allTDtagsTop[i].style.backgroundColor = `aqua`;
+function setCalendarTable(date) {
+  /*
+    Params: Date object.
+    Whatever month and year is passed, a 5x7 calendar 
+    is created in the table in index.html
+  */
+
+  const dateObjPassed = new Date(date.getFullYear(), date.getMonth(),1)
+  const dayOfTheWeek1st = dateObjPassed.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
+
+  if (dayOfTheWeek1st - 1 > 0) { // i.e if its NOT monday
+    dateObjPassed.setDate(dateObjPassed.getDate() - (dayOfTheWeek1st - 1))
+  } else if (dayOfTheWeek1st - 1 < 0) {
+    dateObjPassed.setDate(dateObjPassed.getDate() + (dayOfTheWeek1st - 1))
   }
 
-  now.setDate(now.getDate() + 1)
+  const todaysDate = new Date()
+  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+
+  for (let i=0; i<allTDtagsTop.length; i++) {
+    let strDate = formatDate(dateObjPassed)
+    allTDtagsTop[i].textContent = strDate
+
+    // If the current date is today, the background is painted
+    // aqua to show that.
+    if (isSameDate(todaysDate, dateObjPassed)) {
+      allTDtagsTop[i].style.backgroundColor = `aqua`;
+    } else if (dateObjPassed.getDate() == 1 && dateObjPassed.getMonth() == date.getMonth()) {
+      allTDtagsTop[i].style.backgroundColor = `orange`;
+    }
+
+    dateObjPassed.setDate(dateObjPassed.getDate() + 1)
+  }
 }
 
+function clearSpecialDays() {
+  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+  for (let tag of allTDtagsTop) {
+    tag.style.backgroundColor = 'red'
+  }
+}
+
+// BUTTONS
+
+const nextMonthBtn = document.getElementById(`next-month-btn`)
+const prevMonthBtn = document.getElementById(`prev-month-btn`)
+
+function nextMonth() {
+  moveMonth(1)
+  clearSpecialDays() // This must be before the next line
+  setCalendarTable(selectedDate)
+  setMonthText(monthsArray[selectedDate.getMonth()])
+  setYearText(selectedDate.getFullYear())
+
+  if (monthNeedle == 3) {
+    nextMonthBtn.setAttribute('disabled','true')
+  }
+  prevMonthBtn.disabled = false
+}
+
+function prevMonth() {
+  moveMonth(-1)
+  clearSpecialDays() // This must be before the next line
+  setCalendarTable(selectedDate)
+  setMonthText(monthsArray[selectedDate.getMonth()])
+  setYearText(selectedDate.getFullYear())
+
+  prevMonthBtn.disabled = true ? monthNeedle == 0 : false;
+  nextMonthBtn.disabled = false
+}
+
+// IF NAME == MAIN
+
+window.onload = setCalendarTable(selectedDate)
