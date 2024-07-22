@@ -6,7 +6,6 @@
   <title>Cheap Trains to LDN</title>
   <link rel="stylesheet" href="styles.css"/>
   <script defer src="main.js"></script>
-  <script defer src="buttonFunctions.js"></script>
 </head>
 <body>
   <h1>Cheap Trains to London</h1>
@@ -15,8 +14,11 @@
     <div class="btns-month-container">
       <div class="wrapper">
         <button>Back</button>
-        <h3>July 2024</h3>
-        <button onclick="forwardMonthBtn()">Forward</button>
+        <div style="font-weight: bold; font-size: 2em;">
+          <span id="current-month">July</span>
+          <span>2024</span>
+        </div>
+        <button onclick="nextMonth()">Forward</button>
       </div>
     </div>
     <div class="days-container">
