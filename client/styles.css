@@ -17,6 +17,12 @@ h1,h2 { text-align: center;}
   height: 7vh;
 }
 
+.btns-month-container > .wrapper {
+  display: flex;
+  justify-content: space-between;
+
+}
+
 .days-container {
   width: 100%;
   height: 100%;
