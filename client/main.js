@@ -2,6 +2,8 @@ const monthsArray = ["January","February","March","April","May","June","July","A
 const now = new Date() // Date obj upon loading the page
 var currentMonthAndYear = [now.getMonth(), now.getFullYear()] // State: month and year
 
+// UTILITIES FUNCTIONS
+
 function formatDate(date) {
     // Extract the day, month, and year from the date object
     let day = date.getDate();
@@ -23,6 +25,8 @@ function isSameDate(date1, date2) {
          date1.getMonth() === date2.getMonth() &&
          date1.getDate() === date2.getDate();
 }
+
+// UI UPDATE FUNCTIONS
 
 function setMonthText(monthString) {
   const monthEl = document.getElementById(`current-month`)
@@ -66,21 +70,6 @@ function setCalendarTable(monthAndYear) {
   }
 }
 
-function nextMonthOn1st(monthAndYear) {
-  /*
-    Params: monthAndYear (Array length 2)
-    Returns: Date() obj which is the next month on the 1st
-  */
-
-  let date1 = new Date(monthAndYear[1], monthAndYear[0], 1) // 1st of that month
-  date1.setDate(date1.getMonth() + 1)
-  console.log(date1)
-}
-
-let nextMonthDateObj = new Date(2024, 1, 3)
-let a = [nextMonthDateObj.getMonth(), nextMonthDateObj.getFullYear()]
-window.onload = setCalendarTable(a)
-
 // BUTTONS functions
 
 function forwardMonthBtn() {
@@ -90,7 +79,9 @@ function forwardMonthBtn() {
   const dateObj1MonthAheadOn1st = new Date(2024,monthIndex+1,1)
 }
 
-forwardMonthBtn()
+// IF NAME == MAIN
+
+window.onload = setCalendarTable(currentMonthAndYear)
 
 
 
