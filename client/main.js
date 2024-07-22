@@ -74,10 +74,18 @@ function setCalendarTable(date) {
   }
 }
 
+function clearSpecialDays() {
+  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+  for (let tag of allTDtagsTop) {
+    tag.style.backgroundColor = 'red'
+  }
+}
+
 // BUTTONS
 
 function nextMonth() {
   moveMonth(1)
+  clearSpecialDays() // This must be before the next line
   setCalendarTable(selectedMonth)
   setMonthText(monthsArray[selectedMonth.getMonth()])
 }
