@@ -90,6 +90,13 @@ function nextMonth() {
   setMonthText(monthsArray[selectedMonth.getMonth()])
 }
 
+function prevMonth() {
+  moveMonth(-1)
+  clearSpecialDays() // This must be before the next line
+  setCalendarTable(selectedMonth)
+  setMonthText(monthsArray[selectedMonth.getMonth()])
+}
+
 // IF NAME == MAIN
 
 window.onload = setCalendarTable(selectedMonth)
