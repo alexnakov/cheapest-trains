@@ -1,6 +1,5 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const now = new Date() // Date obj upon loading the page
-var currentMonthAndYear = [now.getMonth(), now.getFullYear()] // State: month and year
+const initialDate = new Date() // Date obj upon loading the page
 
 // UTILITIES FUNCTIONS
 
@@ -33,17 +32,15 @@ function setMonthText(monthString) {
   monthEl.textContent = monthString
 }
 
-function setCalendarTable(monthAndYear) {
+function setCalendarTable(date) {
   /*
-    Params: monthAndYear (Array length 2)
+    Params: Date object.
     Whatever month and year is passed, a 5x7 calendar 
     is created in the table in index.html
   */
 
-  const dateObjPassed = new Date(monthAndYear[1], monthAndYear[0], 1)
+  const dateObjPassed = new Date(date.getFullYear(), date.getMonth(),1)
   const dayOfTheWeek1st = dateObjPassed.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
-
-  console.log(dayOfTheWeek1st)
 
   if (dayOfTheWeek1st - 1 > 0) { // i.e if its NOT monday
     dateObjPassed.setDate(dateObjPassed.getDate() - (dayOfTheWeek1st - 1))
@@ -62,7 +59,7 @@ function setCalendarTable(monthAndYear) {
     // aqua to show that.
     if (isSameDate(todaysDate, dateObjPassed)) {
       allTDtagsTop[i].style.backgroundColor = `aqua`;
-    } else if (dateObjPassed.getDate() == 1 && dateObjPassed.getMonth() == monthAndYear[0]) {
+    } else if (dateObjPassed.getDate() == 1 && dateObjPassed.getMonth() == date.getMonth()) {
       allTDtagsTop[i].style.backgroundColor = `orange`;
     }
 
@@ -81,7 +78,7 @@ function forwardMonthBtn() {
 
 // IF NAME == MAIN
 
-window.onload = setCalendarTable(currentMonthAndYear)
+window.onload = setCalendarTable(initialDate)
 
 
 
