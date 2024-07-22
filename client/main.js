@@ -1,8 +1,6 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const now = new Date() // Date obj upon loading the page
-
-// This varible will be my 'state'
-var currentMonthAndYear = [now.getMonth(), now.getFullYear()]
+var currentMonthAndYear = [now.getMonth(), now.getFullYear()] // State: month and year
 
 function formatDate(date) {
     // Extract the day, month, and year from the date object
@@ -29,6 +27,33 @@ function isSameDate(date1, date2) {
 function setMonthText(monthString) {
   const monthEl = document.getElementById(`current-month`)
   monthEl.textContent = monthString
+}
+
+function nextMonthOn1st(monthAndYear) {
+  /*
+    Params: monthAndYear (Array length 2)
+    Returns: Date() obj which is the next month on the 1st
+  */
+
+  let date1 = new Date(monthAndYear[1], monthAndYear[0], 1) // 1st of that month
+  date1.setDate(date1.getMonth() + 1)
+  console.log(date1)
+}
+
+function setMonthOnCalendar(monthAndYear) {
+  /*
+    Params: monthAndYear (Array length 2)
+    Whatever month and year is passed, a 5x7 calendar 
+    is created in the table in index.html
+  */
+
+  const nextMonthIndex = monthAndYear[0] + 1
+  
+  const dayOfTheWeek1st = nowDate.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
+
+  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
+    nowDate.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
+  }
 }
 
 function set1stMonthOnCalendar(nowDate) {
