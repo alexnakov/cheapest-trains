@@ -13,12 +13,12 @@
   <div class="calendar-container">
     <div class="btns-month-container">
       <div class="wrapper">
-        <button>Back</button>
+        <button disabled id="prev-month-btn" onclick="prevMonth()">Back</button>
         <div style="font-weight: bold; font-size: 2em;">
           <span id="current-month">July</span>
           <span>2024</span>
         </div>
-        <button onclick="nextMonth()">Forward</button>
+        <button id="next-month-btn" onclick="nextMonth()">Forward</button>
       </div>
     </div>
     <div class="days-container">
