@@ -93,9 +93,11 @@ function nextMonth() {
   clearSpecialDays() // This must be before the next line
   setCalendarTable(selectedMonth)
   setMonthText(monthsArray[selectedMonth.getMonth()])
-  
-  monthNeedle++
-  prevMonthBtn.removeAttribute('disabled')
+
+  if (monthNeedle == 3) {
+    nextMonthBtn.setAttribute('disabled','true')
+  }
+  prevMonthBtn.disabled = false
 }
 
 function prevMonth() {
@@ -104,8 +106,8 @@ function prevMonth() {
   setCalendarTable(selectedMonth)
   setMonthText(monthsArray[selectedMonth.getMonth()])
 
-  monthNeedle--
   prevMonthBtn.disabled = true ? monthNeedle == 0 : false;
+  nextMonthBtn.disabled = false
 }
 
 // IF NAME == MAIN
