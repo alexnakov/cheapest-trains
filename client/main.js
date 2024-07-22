@@ -1,8 +1,8 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const now = new Date() // Date obj upon loading the page
+var currentMonthAndYear = [now.getMonth(), now.getFullYear()] // State: month and year
 
-// This varible will be my 'state'
-var currentMonthAndYear = [now.getMonth(), now.getFullYear()]
+// UTILITIES FUNCTIONS
 
 function formatDate(date) {
     // Extract the day, month, and year from the date object
@@ -26,41 +26,49 @@ function isSameDate(date1, date2) {
          date1.getDate() === date2.getDate();
 }
 
+// UI UPDATE FUNCTIONS
+
 function setMonthText(monthString) {
   const monthEl = document.getElementById(`current-month`)
   monthEl.textContent = monthString
 }
 
-function set1stMonthOnCalendar(nowDate) {
+function setCalendarTable(monthAndYear) {
   /*
-  Params: Initial Date object upon loading the page.
+    Params: monthAndYear (Array length 2)
+    Whatever month and year is passed, a 5x7 calendar 
+    is created in the table in index.html
   */
 
-  nowDate.setDate(1) // Set the day the 1st of the month
+  const dateObjPassed = new Date(monthAndYear[1], monthAndYear[0], 1)
+  const dayOfTheWeek1st = dateObjPassed.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
 
-  const dayOfTheWeek1st = nowDate.getDay() //  Day of the week 0 - 6 [Sunday 0, Monday 1]
+  console.log(dayOfTheWeek1st)
 
-  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
-    nowDate.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
+  if (dayOfTheWeek1st - 1 > 0) { // i.e if its NOT monday
+    dateObjPassed.setDate(dateObjPassed.getDate() - (dayOfTheWeek1st - 1))
+  } else if (dayOfTheWeek1st - 1 < 0) {
+    dateObjPassed.setDate(dateObjPassed.getDate() + (dayOfTheWeek1st - 1))
   }
 
-  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
   const todaysDate = new Date()
+  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
 
   for (let i=0; i<allTDtagsTop.length; i++) {
-    let strDate = formatDate(nowDate)
+    let strDate = formatDate(dateObjPassed)
     allTDtagsTop[i].textContent = strDate
 
     // If the current date is today, the background is painted
     // aqua to show that.
-    if (isSameDate(todaysDate, nowDate)) {
+    if (isSameDate(todaysDate, dateObjPassed)) {
       allTDtagsTop[i].style.backgroundColor = `aqua`;
+    } else if (dateObjPassed.getDate() == 1 && dateObjPassed.getMonth() == monthAndYear[0]) {
+      allTDtagsTop[i].style.backgroundColor = `orange`;
     }
-    nowDate.setDate(nowDate.getDate() + 1)
+
+    dateObjPassed.setDate(dateObjPassed.getDate() + 1)
   }
 }
-
-window.onload = set1stMonthOnCalendar(now)
 
 // BUTTONS functions
 
@@ -69,12 +77,11 @@ function forwardMonthBtn() {
   
   const monthIndex = monthsArray.indexOf(calendarTableCurrentMonth)
   const dateObj1MonthAheadOn1st = new Date(2024,monthIndex+1,1)
-
-  console.log(monthIndex)
-  console.log(dateObj1MonthAheadOn1st)
 }
 
-forwardMonthBtn()
+// IF NAME == MAIN
+
+window.onload = setCalendarTable(currentMonthAndYear)
 
 
 
