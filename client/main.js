@@ -29,6 +29,36 @@ function setMonthText(monthString) {
   monthEl.textContent = monthString
 }
 
+function setCalendarTable(monthAndYear) {
+  /*
+    Params: monthAndYear (Array length 2)
+    Whatever month and year is passed, a 5x7 calendar 
+    is created in the table in index.html
+  */
+
+  const dateObjPassed = new Date(monthAndYear[1], monthAndYear[0], 1)
+  const dayOfTheWeek1st = dateObjPassed.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
+
+  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
+    dateObjPassed.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
+  }
+
+  const todaysDate = new Date()
+  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
+
+  for (let i=0; i<allTDtagsTop.length; i++) {
+    let strDate = formatDate(dateObjPassed)
+    allTDtagsTop[i].textContent = strDate
+
+    // If the current date is today, the background is painted
+    // aqua to show that.
+    if (isSameDate(todaysDate, dateObjPassed)) {
+      allTDtagsTop[i].style.backgroundColor = `aqua`;
+    }
+    dateObjPassed.setDate(dateObjPassed.getDate() + 1)
+  }
+}
+
 function nextMonthOn1st(monthAndYear) {
   /*
     Params: monthAndYear (Array length 2)
@@ -40,52 +70,7 @@ function nextMonthOn1st(monthAndYear) {
   console.log(date1)
 }
 
-function setMonthOnCalendar(monthAndYear) {
-  /*
-    Params: monthAndYear (Array length 2)
-    Whatever month and year is passed, a 5x7 calendar 
-    is created in the table in index.html
-  */
-
-  const nextMonthIndex = monthAndYear[0] + 1
-  
-  const dayOfTheWeek1st = nowDate.getDay() // Monday, Tues, Wed etc... as 0 - 6 incl
-
-  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
-    nowDate.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
-  }
-}
-
-function set1stMonthOnCalendar(nowDate) {
-  /*
-  Params: Initial Date object upon loading the page.
-  */
-
-  nowDate.setDate(1) // Set the day the 1st of the month
-
-  const dayOfTheWeek1st = nowDate.getDay() //  Day of the week 0 - 6 [Sunday 0, Monday 1]
-
-  if (dayOfTheWeek1st - 1 != 0) { // i.e if its NOT monday
-    nowDate.setDate(nowDate.getDate() - (dayOfTheWeek1st - 1))
-  }
-
-  const allTDtagsTop = document.querySelectorAll(`td>div.date`)
-  const todaysDate = new Date()
-
-  for (let i=0; i<allTDtagsTop.length; i++) {
-    let strDate = formatDate(nowDate)
-    allTDtagsTop[i].textContent = strDate
-
-    // If the current date is today, the background is painted
-    // aqua to show that.
-    if (isSameDate(todaysDate, nowDate)) {
-      allTDtagsTop[i].style.backgroundColor = `aqua`;
-    }
-    nowDate.setDate(nowDate.getDate() + 1)
-  }
-}
-
-window.onload = set1stMonthOnCalendar(now)
+window.onload = setCalendarTable(currentMonthAndYear)
 
 // BUTTONS functions
 
@@ -94,9 +79,6 @@ function forwardMonthBtn() {
   
   const monthIndex = monthsArray.indexOf(calendarTableCurrentMonth)
   const dateObj1MonthAheadOn1st = new Date(2024,monthIndex+1,1)
-
-  console.log(monthIndex)
-  console.log(dateObj1MonthAheadOn1st)
 }
 
 forwardMonthBtn()
