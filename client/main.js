@@ -1,5 +1,5 @@
 const monthsArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const initialDate = new Date() // Date obj upon loading the page
+var selectedMonth = new Date() // Date obj upon loading the page
 
 // UTILITIES FUNCTIONS
 
@@ -23,6 +23,13 @@ function isSameDate(date1, date2) {
   return date1.getFullYear() === date2.getFullYear() &&
          date1.getMonth() === date2.getMonth() &&
          date1.getDate() === date2.getDate();
+}
+
+// GETTERS AND SETTERS
+
+function moveMonth(numberOfMonths) {
+  selectedMonth.setDate(1)
+  selectedMonth.setMonth(selectedMonth.getMonth() + numberOfMonths)
 }
 
 // UI UPDATE FUNCTIONS
@@ -67,18 +74,13 @@ function setCalendarTable(date) {
   }
 }
 
-// BUTTONS functions
+// BUTTONS
 
-function forwardMonthBtn() {
-  const calendarTableCurrentMonth = document.getElementById(`current-month`).textContent
-  
-  const monthIndex = monthsArray.indexOf(calendarTableCurrentMonth)
-  const dateObj1MonthAheadOn1st = new Date(2024,monthIndex+1,1)
-}
+
 
 // IF NAME == MAIN
 
-window.onload = setCalendarTable(initialDate)
+window.onload = setCalendarTable(selectedMonth)
 
 
 
