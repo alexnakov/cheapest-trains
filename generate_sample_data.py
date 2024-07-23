@@ -26,31 +26,41 @@ def float_to_time_string(hours_float):
     time_string = f"{hours:02}:{minutes:02}"
     return time_string
 
+def generate_random_price_string():
+    """ Generate a price between £14 and £90 in format £10.00 """
+    pounds = random.randint(14, 90) 
+    pence = random.randint(10, 99) 
+    return f"£{pounds}.{pence}"
+
+
 sample_data = []
 date_obj = datetime.now() + timedelta(days=1)
 
 time0 = 8
 
-for j in range(90):
+for j in range(2):
     for i in range(35):
         time0_str = float_to_time_string(time0)
         time1_str = float_to_time_string(time0 + 2.1)
-        price = '£' + str(round(random.uniform(14, 90), 2))
+        price = generate_random_price_string()
         sample_data.append([date_obj.strftime(f"%Y-%m-%d"), time0_str, time1_str, price])
         time0 += 0.45
 
     date_obj = date_obj + timedelta(days=1)
     time0 = 8
 
-# for date in sample_data[25:40:1]:
-#     print(date)
 
 # STORING THE DATA AS A JSON FILE.
+# import json
 
-import json
+# with open('sample_data2.json','w') as file:
+#     json_obj = json.dumps(sample_data, indent=2)
+#     file.write(json_obj)
 
-with open('sample_data2.json','w') as file:
-    json_obj = json.dumps(sample_data, indent=2)
-    file.write(json_obj)
 
-print(len(sample_data))
+# FOR TESTING AND PRINTING PURPOSE
+
+for data in sample_data[:70:7]:
+    print(data)
+
+# print(len(sample_data))
