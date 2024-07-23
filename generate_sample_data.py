@@ -12,6 +12,7 @@ data = [
  - Prices between 10 and 90 pounds
 """
 import random
+from uuid import uuid4
 from datetime import datetime, timedelta
 
 # GENERATING THE DATA 
@@ -40,10 +41,16 @@ time0 = 8
 
 for j in range(2):
     for i in range(35):
+        date_str = date_obj.strftime(f"%Y-%m-%d")
         time0_str = float_to_time_string(time0)
         time1_str = float_to_time_string(time0 + 2.1)
-        price = generate_random_price_string()
-        sample_data.append([date_obj.strftime(f"%Y-%m-%d"), time0_str, time1_str, price])
+        price_str = generate_random_price_string()
+
+        sample_data.append({
+            "id": uuid4(), 
+            "doc": {"date": date_str, "time0": time0_str, "time1": time1_str, "price": price_str}
+        })
+        
         time0 += 0.45
 
     date_obj = date_obj + timedelta(days=1)
