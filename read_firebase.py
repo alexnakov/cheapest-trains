@@ -1,23 +1,16 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Path to your service account key file
 cred = credentials.Certificate('firebase_key.json')
-
 firebase_admin.initialize_app(cred)
 
-db = firestore.client()
+def get_all_data():
+    data = []
 
-# Get all documents in the collection
-docs = db.collection('dates_times_n_prices').stream()
+    db = firestore.client()
+    docs = db.collection('dates_times_n_prices').stream()
 
-# testing purposes
-i = 0
+    for doc in docs:
+        data.append(doc.to_dict())
 
-for doc in docs:
-    print(f'Document ID: {doc.id}')
-    print(f'Data: {doc.to_dict()}')
-
-    i += 1
-    if i == 5:
-        break
+    return data
