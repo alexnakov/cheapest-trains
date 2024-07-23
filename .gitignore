@@ -4,3 +4,4 @@ server/data.json
 server/firebase_key.json
 sample_data.json
 firebase_key.json
+__pycache__/read_firebase.cpython-310.pyc
