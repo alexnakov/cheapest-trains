@@ -18,11 +18,12 @@ def get_docs_stream():
 def docs_to_list_of_dicts(docs):
     data = []
     for doc in docs:
-        data.append(docs._data)
+        data.append(doc._data)
 
 @app.route('/')
 def index():
     docs = get_docs_stream() # Same as firebase .stream() method.
+    docs_to_list_of_dicts(docs)
     return render_template('index.html')
 
 if __name__ == '__main__':
