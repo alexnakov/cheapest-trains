@@ -39,7 +39,7 @@ date_obj = datetime.now() + timedelta(days=1)
 time0 = 8
 sample_data = []
 
-for j in range(2):
+for j in range(90):
     for i in range(35):
         date_str = date_obj.strftime(f"%Y-%m-%d")
         time0_str = float_to_time_string(time0)
@@ -59,12 +59,12 @@ for j in range(2):
 # STORING THE DATA WITH PICKLE.
 import pickle
 
-with open('sample_data3.pkl','wb') as file:
+with open('sample_data.pkl','wb') as file:
     pickle.dump(sample_data, file)
 
 # FOR TESTING AND PRINTING PURPOSE
 
-# for data in sample_data[:70:7]:
-#     print(data)
+# for doc in sample_data[:1000:60]:
+#     print(doc._data)
 
 # print(len(sample_data))
