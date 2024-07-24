@@ -1,7 +1,6 @@
 venv
 .env
-server/data.json
-server/firebase_key.json
-sample_data.json
+sample_data.pkl
 firebase_key.json
 __pycache__/read_firebase.cpython-310.pyc
+__pycache__/generate_sample_data.cpython-310.pyc
