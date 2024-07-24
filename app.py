@@ -9,7 +9,7 @@ def generate_firebase_stream(pickle_list):
     for doc in pickle_list:
         yield doc
 
-with open('sample_data3.pkl','rb') as file:
+with open('sample_data.pkl','rb') as file:
         loaded_list = pickle.load(file)
         docs = generate_firebase_stream(loaded_list)
 
