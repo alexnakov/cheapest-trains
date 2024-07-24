@@ -26,22 +26,28 @@
     <div class="different-months-container">
       <div class="days-container">
         {% for _ in range(35) %}
-          <div class="day"><div class="date"></div><div class="price"></div></div>
+          <div class="month _1 day" style="display: block;">
+            <div class="date"></div>
+            <div class="price"></div>
+          </div>
         {% endfor %}
-      </div>
-      <div class="days-container green" style="visibility: hidden;">
         {% for _ in range(35) %}
-          <div class="day"><div class="date"></div><div class="price"></div></div>
+          <div class="month _2 day" style="display: none;">
+            <div class="date"></div>
+            <div class="price"></div>
+          </div>
         {% endfor %}
-      </div>
-      <div class="days-container blue" style="visibility: hidden;">
         {% for _ in range(35) %}
-          <div class="day"><div class="date"></div><div class="price"></div></div>
+          <div class="month _3 day" style="display: none;">
+            <div class="date"></div>
+            <div class="price"></div>
+          </div>
         {% endfor %}
-      </div>
-      <div class="days-container pink" style="visibility: hidden;">
         {% for _ in range(35) %}
-          <div class="day"><div class="date"></div><div class="price"></div></div>
+          <div class="month _4 day" style="display: none;">
+            <div class="date"></div>
+            <div class="price"></div>
+          </div>
         {% endfor %}
       </div>
     </div>
