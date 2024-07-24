@@ -23,10 +23,12 @@
         <button id="next-month-btn" onclick="nextMonth()">Forward</button>
       </div>
     </div>
-    <div class="days-container">
-      {% for _ in range(35) %}
-        <div class="day"><div class="date"></div><div class="price"></div></div>
-      {% endfor %}
+    <div class="different-months-container">
+      <div class="days-container">
+        {% for _ in range(35) %}
+          <div class="day"><div class="date"></div><div class="price"></div></div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </body>
