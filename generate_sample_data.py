@@ -59,7 +59,6 @@ for j in range(2):
 # STORING THE DATA WITH PICKLE.
 import pickle
 
-print(sample_data[0]._data)
 with open('sample_data3.pkl','wb') as file:
     pickle.dump(sample_data, file)
 
