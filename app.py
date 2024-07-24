@@ -22,24 +22,30 @@ def docs_to_list_of_dicts(docs):
         data.append(doc._data)
     return data
 
-# this function is NOT finished
-def restructure_data_for_templating(data):
-    date_format = r'%Y-%m-%d'
-    all_dates_from_data = []
 
-    for data_point in data:
-        all_dates_from_data.append(data_point['date'])
+def get_date_and_time0_as_arrays(data):
+    dates_and_prices = []
 
-    all_dates_from_data = [datetime.strptime(date, date_format) for date in all_dates_from_data]
-    
-    print(len(all_dates_from_data))
-    print(all_dates_from_data[0])
-    print(data[0])
-    print(data[40])
+    for doc_dict in data:
+        date_as_obj = datetime.strptime(doc_dict['date'], r'%Y-%m-%d')
+        price_float = float(doc_dict['price'][1:])
+        dates_and_prices.append([date_as_obj, price_float])
+
+    sorted(dates_and_prices, key=lambda v2: v2[0])
+
+    result_dict = dict()
+    for date, price in dates_and_prices:
+        if date in result_dict:
+            if price < result_dict[date]:
+                result_dict[date] = price
+        else:
+            result_dict[date] = price
+
+    return result_dict
 
 docs = get_docs_stream() # Same as firebase .stream() method.
 data = docs_to_list_of_dicts(docs)
-restructure_data_for_templating(data)
+get_date_and_time0_as_arrays(data)
 
 @app.route('/')
 def index():
