@@ -41,15 +41,19 @@ def get_date_and_time0_as_arrays(data):
         else:
             result_dict[date] = price
 
-    return result_dict
+    result_array = []
+    for key in result_dict:
+        result_array.append([datetime.strftime(key, r'%d/%m/%y'), result_dict[key]])
 
-docs = get_docs_stream() # Same as firebase .stream() method.
-data = docs_to_list_of_dicts(docs)
-get_date_and_time0_as_arrays(data)
+    return result_array
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    docs = get_docs_stream() # Same as firebase .stream() method.
+    data_of_dicts = docs_to_list_of_dicts(docs)
+    data = get_date_and_time0_as_arrays(data_of_dicts)
+    
+    return render_template('index.html', data=data)
 
 if __name__ == '__main__':
     app.run(debug=True)
