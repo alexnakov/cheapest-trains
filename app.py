@@ -1,17 +1,12 @@
+import pickle
 from flask import Flask, render_template, url_for
 from read_firebase import get_all_data
-import pickle
-
-class FirebaseDoc():
-    def __init__(self, _data):
-        self._data = _data
-
+from generate_sample_data import FirebaseDoc
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    with 
 
     return render_template('index.html')
 
