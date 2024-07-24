@@ -9,13 +9,20 @@ def generate_firebase_stream(pickle_list):
     for doc in pickle_list:
         yield doc
 
-with open('sample_data.pkl','rb') as file:
+def get_docs_stream():
+    with open('sample_data.pkl','rb') as file:
         loaded_list = pickle.load(file)
         docs = generate_firebase_stream(loaded_list)
+        return docs
 
+def docs_to_list_of_dicts(docs):
+    data = []
+    for doc in docs:
+        data.append(docs._data)
 
 @app.route('/')
 def index():
+    docs = get_docs_stream() # Same as firebase .stream() method.
     return render_template('index.html')
 
 if __name__ == '__main__':
