@@ -46,11 +46,23 @@ h1,h2 { text-align: center;}
     ". . . . . . ."
     ". . . . . . ."
     ". . . . . . .";
+    background-color: red;
+}
+
+.days-container.green {
+  background-color: green;
+}
+
+.days-container.blue {
+  background-color: blue;
+}
+
+.days-container.pink {
+  background-color: pink;
 }
 
 .days-container > div  {
   border: 1px solid black;
-  background-color: red;
   position: relative;
 }
 
