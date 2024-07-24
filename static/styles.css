@@ -39,7 +39,7 @@ h1,h2 { text-align: center;}
     ". . . . . . .";
 }
 
-.days-container * {
+.days-container > div  {
   border: 1px solid black;
   background-color: red;
   position: relative;
@@ -56,38 +56,9 @@ h1,h2 { text-align: center;}
   justify-content: center;
 }
 
-table {
-  table-layout: fixed;
-  height: 87.5%;
-  width: 100%;
-}
-
-table td {
-  text-align: center;
-  vertical-align: top;
-  overflow: hidden;
-  position: relative;
-}
-
-table td > div {
-  position: absolute;
-  width: 90%;
-  height: 45%;
-  border: 1px solid black;
-}
-
-table td > div {
-  position: absolute;
-  width: 95%;
-  height: 46.5%;
-  border: 1px solid black;
-  line-height: 32px;
-}
-
-td {
+.day > .date, .day > .price {
   border: 1px solid yellow;
-}
-
-table td :nth-child(2) {
-  top: 50%
-}
+  height: 48%;
+  text-align: center;
+  line-height: 2.5rem;
+} 
