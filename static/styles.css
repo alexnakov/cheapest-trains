@@ -46,7 +46,6 @@ h1,h2 { text-align: center;}
 }
 
 .days-container *:after {
-  content:attr(class);
   position: absolute;
   top: 0;
   left: 0;
