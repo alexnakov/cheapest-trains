@@ -25,22 +25,16 @@
     </div>
     <div class="different-months-container">
       <div class="days-container">
-        {% for _ in range(35) %}
-          <div class="month _1 day" style="display: block;">
-            <div class="date"></div>
-            <div class="price"></div>
+        {% for date, price in data[:35] %}
+          <div class="month _1 day" style="display: none;">
+            <div class="date">{{ date }}</div>
+            <div class="price">£{{ price }}</div>
           </div>
         {% endfor %}
-        {% for _ in range(35) %}
-          <div class="month _2 day" style="display: none;">
-            <div class="date"></div>
-            <div class="price"></div>
-          </div>
-        {% endfor %}
-        {% for _ in range(35) %}
-          <div class="month _3 day" style="display: none;">
-            <div class="date"></div>
-            <div class="price"></div>
+        {% for date, price in data[35:] %}
+          <div class="month _2 day" style="display: display;">
+            <div class="date">{{ date }}</div>
+            <div class="price">£{{ price }}</div>
           </div>
         {% endfor %}
       </div>
