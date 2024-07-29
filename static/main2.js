@@ -13,4 +13,14 @@ function moveForward1Month() {
   for (let el of nextMonthDates) {
     el.style.display = 'block'
   }
+
+  if (monthNeedle != 0) {
+    const backBtn = document.getElementById('prev-month-btn')
+    console.log(backBtn.removeAttribute('disabled'))
+  }
+
+  if (monthNeedle != 1) {
+    const forwardBtn = document.getElementById('next-month-btn')
+    forwardBtn.setAttribute('disabled','true')
+  }
 }
