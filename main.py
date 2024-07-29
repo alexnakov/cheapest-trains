@@ -12,8 +12,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-driver = webdriver.Chrome()
+from selenium.webdriver.common.action_chains import ActionChains
 
 trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_string_at_6am}&departhouript=06&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
 
@@ -56,8 +55,8 @@ def get_time_and_price_data():
     by appending to it.
     """
     global data
+
     all_span_elements = driver.find_elements(By.TAG_NAME, 'span')
-    
     all_pound_elements = [el for el in all_span_elements if '£' in el.text]
     actual_pound_elements = [el for el in all_pound_elements if el.value_of_css_property('color') == 'rgba(15, 41, 77, 1)']
     
@@ -77,15 +76,25 @@ def find_view_later_trains_btn():
     _ = [el for el in all_divs if 'View later trains' in el.text]
     return list(filter(lambda el: len(el.text) < 19, _))[0]
     
+def decline_cookies():
+    decline_btn = driver.find_element(By.CLASS_NAME, 'cookie-banner-btn-more')
+    decline_btn.click()
+
+driver = webdriver.Chrome()
+action_chain = ActionChains(driver)
+
 try:
     driver.get(trip_com_q_string)
     
     time.sleep(3)
     
+    decline_cookies()
+
     get_time_and_price_data()
 
-    while len(data) < 30:
+    while len(data) < 3000:
         view_later_trains_btn = find_view_later_trains_btn()
+        action_chain.scroll_to_element(view_later_trains_btn)
         view_later_trains_btn.click()
         time.sleep(3)
         get_time_and_price_data()
