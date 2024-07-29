@@ -84,7 +84,7 @@ try:
     
     get_time_and_price_data()
 
-    while len(data) < 151:
+    while len(data) < 30:
         view_later_trains_btn = find_view_later_trains_btn()
         view_later_trains_btn.click()
         time.sleep(3)
@@ -102,7 +102,7 @@ try:
         data[i].insert(0, dates_as_strings[i])
 
     import json
-    with open('data.json','w') as f:
+    with open('real_data.json','w') as f:
         f.write(json.dumps(data, indent=2))
 finally:
     driver.quit()
