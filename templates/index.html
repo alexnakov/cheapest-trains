@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cheap Trains to LDN</title>
   <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}"/>
-  <script>
-  </script>
-  <script defer src="{{url_for('static',filename='main.js')}}"></script>
+  <script defer src="{{ url_for('static',filename='main2.js') }}"></script>
 </head>
 <body>
   <h1>Cheap Trains to London</h1>
@@ -15,63 +13,29 @@
   <div class="calendar-container">
     <div class="btns-month-container">
       <div class="wrapper">
-        <button disabled id="prev-month-btn" onclick="prevMonth()">Back</button>
+        <button disabled id="prev-month-btn" onclick="moveBack1Month()">Back</button>
         <div style="font-weight: bold; font-size: 2em;">
           <span id="current-month">July</span>
           <span id="current-year">2024</span>
         </div>
-        <button id="next-month-btn" onclick="nextMonth()">Forward</button>
+        <button id="next-month-btn" onclick="moveForward1Month()">Forward</button>
       </div>
     </div>
-    <div class="days-container">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+    <div class="different-months-container">
+      <div class="days-container">
+        {% for date, price in data[:35] %}
+          <div class="month _1 day" style="display: block;">
+            <div class="date">{{ date }}</div>
+            <div class="price">£{{ price }}</div>
+          </div>
+        {% endfor %}
+        {% for date, price in data[35:] %}
+          <div class="month _2 day" style="display: none;">
+            <div class="date">{{ date }}</div>
+            <div class="price">£{{ price }}</div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </body>
