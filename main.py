@@ -37,8 +37,7 @@ def find_elements(selector, query):
    
 def decline_cookies():
     try:
-        time.sleep(3)
-        decline_btn = driver.find_element(By.CLASS_NAME, 'cookie-banner-btn-more')
+        decline_btn = find_elements(By.CLASS_NAME, 'cookie-banner-btn-more')[0]
         decline_btn.click()
     except NoSuchElementException:
         print('No cookie banner was found')
@@ -52,9 +51,10 @@ all_h4s = find_elements(By.TAG_NAME, 'h4')
 all_spans = find_elements(By.TAG_NAME, 'span')
 all_divs = find_elements(By.TAG_NAME, 'div')
 
-all_times = list(filter(lambda el: ':' in el.text, all_h4s))
+times = list(map(lambda x:x.text, list(filter(lambda el: ':' in el.text, all_h4s)))) 
+prices = list(map(lambda x:x.text, list(filter(lambda el: '£' in el.text and el.value_of_css_property('color')=='rgba(15, 41, 77, 1)', all_spans))))
+next_trains_btn = list(filter(lambda el: 'View later trains' in el.text and len(el.text) == 17, all_divs))[0].text
 
-for i in all_times:
-    print(i.text)
+
 
 driver.quit()
