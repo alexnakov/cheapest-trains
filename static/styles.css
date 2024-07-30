@@ -62,7 +62,7 @@ h1,h2 { text-align: center;}
 }
 
 .days-container > div  {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   position: relative;
 }
 
@@ -78,8 +78,17 @@ h1,h2 { text-align: center;}
 }
 
 .day > .date, .day > .price {
-  border: 1px solid yellow;
+  border: 1px solid black;
   height: 48%;
   text-align: center;
   line-height: 2.5rem;
 } 
+
+.price {
+  background-color: rgba(246, 145, 145, 0.761);
+  border-top: 1px dashed black !important;
+}
+
+.date {
+  border-bottom: 1px dashed black !important;
+}
