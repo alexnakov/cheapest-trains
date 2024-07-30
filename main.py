@@ -11,6 +11,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import time
 import firebase_admin
+import asyncio
 
 cred = credentials.Certificate(r"firebase_key.json")
 firebase_admin.initialize_app(cred)
@@ -22,7 +23,12 @@ tomorrow_at_6am = tomorrow.replace(hour=6, minute=0, second=0, microsecond=0)
 date_str = tomorrow_at_6am.strftime(f'%Y-%m-%d')
 trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=06&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
 
-data = []
+async def find_elements_w(by_what, string):
+    for i in range(15):
+        try:
+            return driver.find_elements(by_what, string)
+        except:
+            time.sleep(1)
 
 def assign_dates(data, initial_date):
     """ 
@@ -123,9 +129,20 @@ def upload_data_to_firebase(db, data):
 
     batch.commit()
 
+def get_all_divs_and_span_elements():
+
+
+data = []
+current_date = tomorrow_at_6am
+
 driver = webdriver.Chrome()
 driver.get(trip_com_q_string)
 decline_cookies()
+
+
+
+
+driver.quit()
 
 
 try:
