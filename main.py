@@ -6,13 +6,19 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from firebase_admin import credentials
+from firebase_admin import firestore
 import time
+import firebase_admin
+
+cred = credentials.Certificate(r"firebase_key.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 now = datetime.now()
 tomorrow = now + timedelta(days=1)
 tomorrow_at_6am = tomorrow.replace(hour=6, minute=0, second=0, microsecond=0)
 date_str = tomorrow_at_6am.strftime(f'%Y-%m-%d')
-
 trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=06&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
 
 data = []
@@ -45,6 +51,17 @@ def assign_dates(data, initial_date):
             dates.append(dates[-1])
 
     return dates
+
+def add_date_to_time_n_price_data(data, date_str):
+    global data
+    # assigning dates to the times and prices
+    time0_list = [arr[0] for arr in data]
+    dates = assign_dates(time0_list, date_str)
+    dates_as_strings = [date.strftime(f'%Y-%m-%d') for date in dates]
+
+    # date will be inserted in the time_price data called 'data'
+    for i in range(len(dates_as_strings)):
+        data[i].insert(0, dates_as_strings[i])
 
 def get_time_and_price_data():
     """
@@ -82,13 +99,32 @@ def find_view_later_trains_btn():
     return list(filter(lambda el: len(el.text) < 19, _))[0]
     
 def decline_cookies():
-    decline_btn = driver.find_element(By.CLASS_NAME, 'cookie-banner-btn-more')
-    decline_btn.click()
+    try:
+        decline_btn = driver.find_element(By.CLASS_NAME, 'cookie-banner-btn-more')
+        decline_btn.click()
+    except:
+        pass
+
+def upload_data_to_firebase(db, data):
+    batch = db.batch()
+
+    for journey in data:
+        data_to_upload = {
+            'date': journey[0],
+            'time0': journey[1],
+            'time1': journey[2],
+            'price': journey[3],
+        }
+        
+        doc_ref = db.collection('dates_times_n_prices').document()
+        batch.set(doc_ref, data_to_upload)
+
+    batch.commit()
 
 driver = webdriver.Chrome()
 
 try:
-    driver.get(trip_com_q_string)
+    driver.get(trip_com_q_string) # Load the page
     decline_cookies()
 
     get_time_and_price_data() # 1st get of time and price data
@@ -97,23 +133,14 @@ try:
 
     print(len(data))
 
-    while len(data) < 30:
+    while len(data) < 3000:
         get_time_and_price_data()
         view_later_trains_btn = find_view_later_trains_btn()
         view_later_trains_btn.click()
-        print(len(data))
 
-    # assigning dates to the times and prices
-    time0_list = [arr[0] for arr in data]
-    dates = assign_dates(time0_list, date_str)
-    dates_as_strings = [date.strftime(f'%Y-%m-%d') for date in dates]
-
-    # date will be inserted in the time_price data called 'data'
-    for i in range(len(dates_as_strings)):
-        data[i].insert(0, dates_as_strings[i])
-
-    import json
-    with open('real_data.json','w') as f:
-        f.write(json.dumps(data, indent=2))
+    add_date_to_time_n_price_data(data, date_str)
+    upload_data_to_firebase(db, data)
 finally:
+    print(40*'=')
+    print()
     driver.quit()
