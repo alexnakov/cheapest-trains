@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 from firebase_admin import credentials
 from firebase_admin import firestore
 import time
@@ -100,10 +101,11 @@ def find_view_later_trains_btn():
     
 def decline_cookies():
     try:
+        time.sleep(3)
         decline_btn = driver.find_element(By.CLASS_NAME, 'cookie-banner-btn-more')
         decline_btn.click()
-    except:
-        pass
+    except NoSuchElementException:
+        print('No cookie banner was found')
 
 def upload_data_to_firebase(db, data):
     batch = db.batch()
@@ -122,6 +124,9 @@ def upload_data_to_firebase(db, data):
     batch.commit()
 
 driver = webdriver.Chrome()
+driver.get(trip_com_q_string)
+decline_cookies()
+
 
 try:
     driver.get(trip_com_q_string) # Load the page
