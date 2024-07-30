@@ -23,43 +23,72 @@ h1,h2 { text-align: center;}
 
 }
 
-.days-container {
+.different-months-container {
   width: 100%;
   height: 100%;
-}
-
-table {
-  table-layout: fixed;
-  height: 87.5%;
-  width: 100%;
-}
-
-table td {
-  text-align: center;
-  vertical-align: top;
-  overflow: hidden;
   position: relative;
 }
 
-table td > div {
+.days-container {
   position: absolute;
-  width: 90%;
-  height: 45%;
-  border: 1px solid black;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    ". . . . . . ."
+    ". . . . . . ."
+    ". . . . . . ."
+    ". . . . . . ."
+    ". . . . . . .";
+    background-color: red;
 }
 
-table td > div {
+.days-container.green {
+  background-color: green;
+}
+
+.days-container.blue {
+  background-color: blue;
+}
+
+.days-container.pink {
+  background-color: pink;
+}
+
+.days-container > div  {
+  /* border: 1px solid black; */
+  position: relative;
+}
+
+.days-container *:after {
   position: absolute;
-  width: 95%;
-  height: 46.5%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+.day > .date, .day > .price {
   border: 1px solid black;
-  line-height: 32px;
+  height: 48%;
+  text-align: center;
+  line-height: 2.5rem;
+} 
+
+.price {
+  background-color: rgba(246, 145, 145, 0.761);
+  border-top: 1px dashed black !important;
 }
 
-td {
-  border: 1px solid yellow;
-}
-
-table td :nth-child(2) {
-  top: 50%
+.date {
+  border-bottom: 1px dashed black !important;
 }
