@@ -26,20 +26,11 @@ trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&a
 def find_elements(selector, query):
     """ Tries to find an element within 15 secs and returns it. """
     try:
-        return WebDriverWait(driver, 15).until(EC.presence_of_an_element_located((selector, query)))
+        return WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((selector, query)))
     except NoSuchElementException:
         print('Error: There is no such element')
     except TimeoutException:
         print('Error: Time to find an element has elapsed')
-
-
-
-def find_elements_w(by_what, string):
-    for i in range(15):
-        try:
-            return driver.find_elements(by_what, string)
-        except:
-            time.sleep(1)
 
 def assign_dates(data, initial_date):
     """ 
