@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from firebase_admin import credentials
 from firebase_admin import firestore
 import time
@@ -22,8 +22,19 @@ tomorrow = now + timedelta(days=1)
 tomorrow_at_6am = tomorrow.replace(hour=6, minute=0, second=0, microsecond=0)
 date_str = tomorrow_at_6am.strftime(f'%Y-%m-%d')
 trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=06&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
+ 
+def find_elements(selector, query):
+    """ Tries to find an element within 15 secs and returns it. """
+    try:
+        return WebDriverWait(driver, 15).until(EC.presence_of_an_element_located((selector, query)))
+    except NoSuchElementException:
+        print('Error: There is no such element')
+    except TimeoutException:
+        print('Error: Time to find an element has elapsed')
 
-async def find_elements_w(by_what, string):
+
+
+def find_elements_w(by_what, string):
     for i in range(15):
         try:
             return driver.find_elements(by_what, string)
@@ -130,7 +141,8 @@ def upload_data_to_firebase(db, data):
     batch.commit()
 
 def get_all_divs_and_span_elements():
-
+    alls_divs = find_elements_w(By.TAG_NAME, 'div')
+    alls_spans = find_elements_w(By.TAG_NAME, 'span')
 
 data = []
 current_date = tomorrow_at_6am
@@ -139,7 +151,8 @@ driver = webdriver.Chrome()
 driver.get(trip_com_q_string)
 decline_cookies()
 
-
+while current_date < tomorrow_at_6am + timedelta(days=80):
+    
 
 
 driver.quit()
