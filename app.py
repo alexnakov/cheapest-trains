@@ -22,7 +22,6 @@ def docs_to_list_of_dicts(docs):
         data.append(doc._data)
     return data
 
-
 def get_date_and_time0_as_arrays(data):
     dates_and_prices = []
 
@@ -52,7 +51,8 @@ def index():
     docs = get_docs_stream() # Same as firebase .stream() method.
     data_of_dicts = docs_to_list_of_dicts(docs)
     data = get_date_and_time0_as_arrays(data_of_dicts)
-    data = data[:70]
+    data = data[:70] # Only next 70 days worth of data
+
     return render_template('index.html', data=data)
 
 if __name__ == '__main__':
