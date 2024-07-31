@@ -12,6 +12,7 @@ from firebase_admin import firestore
 import time
 import firebase_admin
 import asyncio
+import json 
 
 cred = credentials.Certificate(r"firebase_key.json")
 firebase_admin.initialize_app(cred)
@@ -19,7 +20,9 @@ db = firestore.client()
 
 now = datetime.now()
 selected_date = now.replace(hour=22, minute=0, second=0, microsecond=0) + timedelta(days=1)
-end_date = selected_date + timedelta(days=2)
+end_date = selected_date + timedelta(days=3)
+print(selected_date)
+print(end_date)
 
 date_str = selected_date.strftime(f'%Y-%m-%d')
 trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=22&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
@@ -45,6 +48,36 @@ def decline_cookies():
     except NoSuchElementException:
         print('No cookie banner was found')
 
+def get_times():
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_h4s = find_elements(By.TAG_NAME, 'h4')
+            return list(map(lambda x:x.text, list(filter(lambda el: ':' in el.text, all_h4s))))[::2] 
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+
+def get_prices():
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_spans = find_elements(By.TAG_NAME, 'span')
+            return list(map(lambda x:x.text, list(filter(lambda el: '£' in el.text and el.value_of_css_property('color')=='rgba(15, 41, 77, 1)', all_spans))))
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+
+def click_next_btn():
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_divs = find_elements(By.TAG_NAME, 'div')
+            list(filter(lambda el: 'View later trains' in el.text and len(el.text) == 17, all_divs))[0].click()
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+
 # START OF DRIVER
 
 driver.get(trip_com_q_string)
@@ -52,17 +85,9 @@ decline_cookies()
 
 start = time.time()
 
-for j in range(15):
-    if selected_date > end_date:
-        for f in data[-5:]:
-            print(f)
-            break
-
-    all_h4s = find_elements(By.TAG_NAME, 'h4')
-    all_spans = find_elements(By.TAG_NAME, 'span')
-
-    times = list(map(lambda x:x.text, list(filter(lambda el: ':' in el.text, all_h4s))))[::2] 
-    prices = list(map(lambda x:x.text, list(filter(lambda el: '£' in el.text and el.value_of_css_property('color')=='rgba(15, 41, 77, 1)', all_spans))))
+while selected_date < end_date:
+    times = get_times()
+    prices = get_prices()
 
     current_t = times[0]
     for i in range(0, len(times)):
@@ -75,13 +100,17 @@ for j in range(15):
             'price': prices[i]
         })
 
-    all_divs = find_elements(By.TAG_NAME, 'div')
-    list(filter(lambda el: 'View later trains' in el.text and len(el.text) == 17, all_divs))[0].click()
-
+    click_next_btn()
+    
     time.sleep(1.5)
+    print('current data length: ', len(data))
 
-    print(len(data))
+print(len(data))
+print('-'*30)
+print(time.time() - start, 'secs')
 
-print(time.time() - start)
+with open('real_data.json','w') as file:
+    json.dump(data, file)
+
 
 driver.quit()
