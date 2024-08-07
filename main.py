@@ -6,141 +6,135 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from firebase_admin import credentials
 from firebase_admin import firestore
 import time
 import firebase_admin
-
-cred = credentials.Certificate(r"firebase_key.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+import asyncio
+import json 
+import os
 
 now = datetime.now()
-tomorrow = now + timedelta(days=1)
-tomorrow_at_6am = tomorrow.replace(hour=6, minute=0, second=0, microsecond=0)
-date_str = tomorrow_at_6am.strftime(f'%Y-%m-%d')
-trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=06&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
+selected_date = now.replace(hour=22, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-data = []
+date_str = selected_date.strftime(f'%Y-%m-%d')
+trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=22&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
 
-def assign_dates(data, initial_date):
-    """ 
-    It takes the data collected from the train times and returns the
-    corresponding date when the journeys starts. This accounts for 
-    rollover days.
-
-    params:
-        data (list) - start times of journey in a single list as 
-        string of time initial date - datetime obj of initial 
-        date at 00:00:00
-        initial_date - datetime obj of initial date.
-    returns:
-        (list) - list of same length as data with datetime objs 
-        representing which day that journey had started
-    """
-    dates = [initial_date]
-
-    for i in range(1, len(data)):
-        time0 = int(data[i-1][:2])
-        time1 = int(data[i][:2])
-        
-        if time1 < time0:
-            next_day = dates[-1] + timedelta(days=1)
-            dates.append(next_day)
-        else:
-            dates.append(dates[-1])
-
-    return dates
-
-def add_date_to_time_n_price_data(data, date_str):
-    global data
-    # assigning dates to the times and prices
-    time0_list = [arr[0] for arr in data]
-    dates = assign_dates(time0_list, date_str)
-    dates_as_strings = [date.strftime(f'%Y-%m-%d') for date in dates]
-
-    # date will be inserted in the time_price data called 'data'
-    for i in range(len(dates_as_strings)):
-        data[i].insert(0, dates_as_strings[i])
-
-def get_time_and_price_data():
-    """
-    It looks at the website and searches the <span> and <h4> tags
-    which contain the time and price of the journey respectively.
-    Once the data is found, it changes the global variable 'data'
-    by appending to it.
-    """
-    global data
-    time.sleep(3)
-    all_span_elements = driver.find_elements(By.TAG_NAME, 'span')
-    all_pound_elements = [el for el in all_span_elements if '£' in el.text]
-    actual_pound_elements = [el for el in all_pound_elements if el.value_of_css_property('color') == 'rgba(15, 41, 77, 1)']
-    
-    all_h4_elements = driver.find_elements(By.TAG_NAME, 'h4')
-    all_time_elements = [el for el in all_h4_elements if ':' in el.text]
-    time_elements_in_pairs = [[all_time_elements[i], all_time_elements[i + 1]] for i in range(0, len(all_time_elements), 2)]
-
-    for i in range(len(actual_pound_elements)):
-        data.append([time_elements_in_pairs[i][0].text, time_elements_in_pairs[i][1].text, actual_pound_elements[i].text])
-        print([time_elements_in_pairs[i][0].text, time_elements_in_pairs[i][1].text, actual_pound_elements[i].text])
-
-def find_view_later_trains_btn():
-    """
-    Selenium locates the btn 'View later trains' which will allow me
-    to load more train data to cover the whole day.
-    """
-    for i in range(5):
+def find_elements(selector, query):
+    """ Tries to find an element within 15 secs and returns it. """
+    attempts = 0
+    while attempts < 10:
         try:
-            all_divs = driver.find_elements(By.TAG_NAME, 'div')
-            _ = [el for el in all_divs if 'View later trains' in el.text]
-        except:
-            time.sleep(3)
-
-    return list(filter(lambda el: len(el.text) < 19, _))[0]
-    
+            return WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((selector, query)))
+        except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
+            attempts += 1
+            time.sleep(1)
+    return "Could not find element you were looking for"
+           
 def decline_cookies():
     try:
-        decline_btn = driver.find_element(By.CLASS_NAME, 'cookie-banner-btn-more')
+        decline_btn = find_elements(By.CLASS_NAME, 'cookie-banner-btn-more')[0]
         decline_btn.click()
+    except NoSuchElementException:
+        print('No cookie banner was found')
+
+def get_times():
+    take_screenshot()
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_h4s = find_elements(By.TAG_NAME, 'h4')
+            return list(map(lambda x:x.text, list(filter(lambda el: ':' in el.text, all_h4s))))[::2] 
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+            print(f'stale exception #{attempts} in get_times() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for get_times() is now clear')
+
+def get_prices():
+    take_screenshot()
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_spans = find_elements(By.TAG_NAME, 'span')
+            return list(map(lambda x:x.text, list(filter(lambda el: '£' in el.text and el.value_of_css_property('color')=='rgba(15, 41, 77, 1)', all_spans))))
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+            print(f'stale exception #{attempts} in get_prices() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for get_prices() is now clear')
+
+def click_next_btn():
+    take_screenshot()
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_divs = find_elements(By.TAG_NAME, 'div')
+            btn_as_list = list(filter(lambda el: 'View later trains' in el.text and len(el.text) == 17, all_divs))
+            if len(btn_as_list) == 0:
+                pass
+            else:
+                btn_as_list[0].click()
+                attempts = 0
+                break
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+            print(f'stale exception #{attempts} in click_next_btn() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for click_next_btn() is now clear')
+                break
+
+def write_to_txt_file(hour,price):
+    with open('real_data.txt','a') as file:
+        file.write(f'{hour},{price}\n')
+
+def count_lines_in_txt_file():
+    filename = 'real_data.txt'
+    with open(filename, 'r') as file:
+        line_count = sum(1 for line in file)
+    return line_count
+
+def take_screenshot():
+    files = os.listdir('./screenshots')          
+    driver.save_screenshot(rf'./screenshots/{datetime.now()}.png')
+    
+    if len(files) > 7:
+        sorted_files = sorted(os.listdir('./screenshots').copy())
+        file_path = os.path.join('./screenshots', sorted_files[0])
+        os.remove(file_path)
+
+if __name__ == '__main__':
+    try:
+        os.remove('real_data.txt')
     except:
         pass
-
-def upload_data_to_firebase(db, data):
-    batch = db.batch()
-
-    for journey in data:
-        data_to_upload = {
-            'date': journey[0],
-            'time0': journey[1],
-            'time1': journey[2],
-            'price': journey[3],
-        }
-        
-        doc_ref = db.collection('dates_times_n_prices').document()
-        batch.set(doc_ref, data_to_upload)
-
-    batch.commit()
-
-driver = webdriver.Chrome()
-
-try:
-    driver.get(trip_com_q_string) # Load the page
+    driver = webdriver.Chrome()
+    driver.get(trip_com_q_string)
     decline_cookies()
 
-    get_time_and_price_data() # 1st get of time and price data
-    view_later_trains_btn = find_view_later_trains_btn()
-    view_later_trains_btn.click()
+    time.sleep(2)
 
-    print(len(data))
+    start = time.time()
 
-    while len(data) < 3000:
-        get_time_and_price_data()
-        view_later_trains_btn = find_view_later_trains_btn()
-        view_later_trains_btn.click()
+    for j in range(5):
+        times = get_times()
+        prices = get_prices()
 
-    add_date_to_time_n_price_data(data, date_str)
-    upload_data_to_firebase(db, data)
-finally:
-    print(40*'=')
-    print()
+        for i in range(len(times)):
+            write_to_txt_file(times[i],prices[i])
+
+        click_next_btn()
+        time.sleep(0.5)
+        print(count_lines_in_txt_file())
+
+    print('-'*30)
+    print(time.time() - start, 'secs')
+
     driver.quit()
