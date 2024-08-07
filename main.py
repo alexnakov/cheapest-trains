@@ -13,22 +13,13 @@ import time
 import firebase_admin
 import asyncio
 import json 
-
-cred = credentials.Certificate(r"firebase_key.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+import os
 
 now = datetime.now()
 selected_date = now.replace(hour=22, minute=0, second=0, microsecond=0) + timedelta(days=1)
-end_date = selected_date + timedelta(days=3)
-print(selected_date)
-print(end_date)
 
 date_str = selected_date.strftime(f'%Y-%m-%d')
 trip_com_q_string = f'https://uk.trip.com/trains/list?departurecitycode=GB2278&arrivalcitycode=GB1594&departurecity=Sheffield&arrivalcity=London%20(Any)&departdate={date_str}&departhouript=22&departminuteipt=00&scheduleType=single&hidadultnum=1&hidchildnum=0&railcards=%7B%22YNG%22%3A1%7D&isregularlink=1&biztype=UK&locale=en-GB&curr=GBP'
- 
-data = []
-driver = webdriver.Chrome()
 
 def find_elements(selector, query):
     """ Tries to find an element within 15 secs and returns it. """
@@ -49,6 +40,7 @@ def decline_cookies():
         print('No cookie banner was found')
 
 def get_times():
+    take_screenshot()
     attempts = 0
     while attempts < 10:
         try:
@@ -57,8 +49,13 @@ def get_times():
         except StaleElementReferenceException:
             attempts += 1
             time.sleep(1)
+            print(f'stale exception #{attempts} in get_times() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for get_times() is now clear')
 
 def get_prices():
+    take_screenshot()
     attempts = 0
     while attempts < 10:
         try:
@@ -67,50 +64,77 @@ def get_prices():
         except StaleElementReferenceException:
             attempts += 1
             time.sleep(1)
+            print(f'stale exception #{attempts} in get_prices() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for get_prices() is now clear')
 
 def click_next_btn():
+    take_screenshot()
     attempts = 0
     while attempts < 10:
         try:
             all_divs = find_elements(By.TAG_NAME, 'div')
-            list(filter(lambda el: 'View later trains' in el.text and len(el.text) == 17, all_divs))[0].click()
+            btn_as_list = list(filter(lambda el: 'View later trains' in el.text and len(el.text) == 17, all_divs))
+            if len(btn_as_list) == 0:
+                pass
+            else:
+                btn_as_list[0].click()
+                attempts = 0
+                break
         except StaleElementReferenceException:
             attempts += 1
             time.sleep(1)
+            print(f'stale exception #{attempts} in click_next_btn() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for click_next_btn() is now clear')
+                break
 
-# START OF DRIVER
+def write_to_txt_file(hour,price):
+    with open('real_data.txt','a') as file:
+        file.write(f'{hour},{price}\n')
 
-driver.get(trip_com_q_string)
-decline_cookies()
+def count_lines_in_txt_file():
+    filename = 'real_data.txt'
+    with open(filename, 'r') as file:
+        line_count = sum(1 for line in file)
+    return line_count
 
-start = time.time()
-
-while selected_date < end_date:
-    times = get_times()
-    prices = get_prices()
-
-    current_t = times[0]
-    for i in range(0, len(times)):
-        if int(times[i][:2]) < int(current_t[:2]):
-            selected_date = selected_date + timedelta(days=1)
-        current_t = times[i]
-        data.append({
-            'date': selected_date.strftime(r'%d/%m/%y'),
-            'time0': times[i],
-            'price': prices[i]
-        })
-
-    click_next_btn()
+def take_screenshot():
+    files = os.listdir('./screenshots')          
+    driver.save_screenshot(rf'./screenshots/{datetime.now()}.png')
     
-    time.sleep(1.5)
-    print('current data length: ', len(data))
+    if len(files) > 7:
+        sorted_files = sorted(os.listdir('./screenshots').copy())
+        file_path = os.path.join('./screenshots', sorted_files[0])
+        os.remove(file_path)
 
-print(len(data))
-print('-'*30)
-print(time.time() - start, 'secs')
+if __name__ == '__main__':
+    try:
+        os.remove('real_data.txt')
+    except:
+        pass
+    driver = webdriver.Chrome()
+    driver.get(trip_com_q_string)
+    decline_cookies()
 
-with open('real_data.json','w') as file:
-    json.dump(data, file)
+    time.sleep(2)
 
+    start = time.time()
 
-driver.quit()
+    for j in range(5):
+        times = get_times()
+        prices = get_prices()
+
+        for i in range(len(times)):
+            write_to_txt_file(times[i],prices[i])
+
+        click_next_btn()
+        time.sleep(0.5)
+        print(count_lines_in_txt_file())
+
+    print('-'*30)
+    print(time.time() - start, 'secs')
+
+    driver.quit()
