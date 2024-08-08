@@ -112,29 +112,34 @@ def take_screenshot():
 
 if __name__ == '__main__':
     try:
-        os.remove('real_data.txt')
+        try:
+            os.remove('real_data.txt')
+        except:
+            pass
+        driver = webdriver.Chrome()
+        driver.get(trip_com_q_string)
+        decline_cookies()
+
+        time.sleep(2)
+
+        start = time.time()
+
+        for j in range(2900 // 8):
+            times = get_times()
+            prices = get_prices()
+
+            for i in range(len(times)):
+                write_to_txt_file(times[i],prices[i])
+
+            click_next_btn()
+            time.sleep(0.5)
+            print(count_lines_in_txt_file())
+
+        print('-'*30)
+        print(time.time() - start, 'secs')
     except:
-        pass
-    driver = webdriver.Chrome()
-    driver.get(trip_com_q_string)
-    decline_cookies()
-
-    time.sleep(2)
-
-    start = time.time()
-
-    for j in range(5):
-        times = get_times()
-        prices = get_prices()
-
-        for i in range(len(times)):
-            write_to_txt_file(times[i],prices[i])
-
-        click_next_btn()
-        time.sleep(0.5)
-        print(count_lines_in_txt_file())
-
-    print('-'*30)
-    print(time.time() - start, 'secs')
+        file = "not-sound-1.wav"
+        os.system("afplay " + file)
+        print('Something unexpected happened')
 
     driver.quit()
