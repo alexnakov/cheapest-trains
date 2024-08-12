@@ -26,15 +26,23 @@ def find_elements(selector, query):
             time.sleep(1)
     return "Could not find element you were looking for"
 
+import traceback
 
-driver = webdriver.Chrome()
-driver.get('https://www.bbc.co.uk/news')
-time.sleep(1)
-all_spans = find_elements(By.TAG_NAME, 'span')
-home = list(filter(lambda el: 'InDepth' in el.text and len(el.text) == 7, all_spans))[0]
+try:
+    # Code that may raise an exception
+    x = 1 / 0
+except Exception as e:
+    print("Error occurred:")
+    traceback.print_exc()
 
-ac = ActionChains(driver, 750)
-print(dir(ac))
+# driver = webdriver.Chrome()
+# driver.get('https://www.bbc.co.uk/news')
+# time.sleep(1)
+# all_spans = find_elements(By.TAG_NAME, 'span')
+# home = list(filter(lambda el: 'InDepth' in el.text and len(el.text) == 7, all_spans))[0]
 
-ac.move_to_element(home).scroll_by_amount(0, 100)
-ac.perform()
+# ac = ActionChains(driver, 750)
+# print(dir(ac))
+
+# ac.move_to_element(home).scroll_by_amount(0, 500)
+# ac.perform()
