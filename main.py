@@ -14,6 +14,7 @@ import firebase_admin
 import asyncio
 import json 
 import os
+import traceback
 
 now = datetime.now()
 selected_date = now.replace(hour=22, minute=0, second=0, microsecond=0) + timedelta(days=1)
@@ -39,13 +40,30 @@ def decline_cookies():
     except NoSuchElementException:
         print('No cookie banner was found')
 
+def get_last_time_element():
+    take_screenshot()
+    attempts = 0
+    while attempts < 10:
+        try:
+            all_h4s = find_elements(By.TAG_NAME, 'h4')
+            return_list = list(filter(lambda el: ':' in el.text, all_h4s))
+            return return_list[-2]
+        except StaleElementReferenceException:
+            attempts += 1
+            time.sleep(1)
+            print(f'stale exception #{attempts} in get_last_time_element() occured')
+        finally:
+            if attempts > 0:
+                print('stale exception for get_last_time_element() is now clear')
+
 def get_times():
     take_screenshot()
     attempts = 0
     while attempts < 10:
         try:
             all_h4s = find_elements(By.TAG_NAME, 'h4')
-            return list(map(lambda x:x.text, list(filter(lambda el: ':' in el.text, all_h4s))))[::2] 
+            return_list = list(map(lambda x:x.text, list(filter(lambda el: ':' in el.text, all_h4s))))
+            return return_list[::2] 
         except StaleElementReferenceException:
             attempts += 1
             time.sleep(1)
@@ -60,7 +78,8 @@ def get_prices():
     while attempts < 10:
         try:
             all_spans = find_elements(By.TAG_NAME, 'span')
-            return list(map(lambda x:x.text, list(filter(lambda el: '£' in el.text and el.value_of_css_property('color')=='rgba(15, 41, 77, 1)', all_spans))))
+            return_list = list(map(lambda x:x.text, list(filter(lambda el: '£' in el.text and el.value_of_css_property('color')=='rgba(15, 41, 77, 1)', all_spans))))
+            return return_list
         except StaleElementReferenceException:
             attempts += 1
             time.sleep(1)
@@ -110,36 +129,56 @@ def take_screenshot():
         file_path = os.path.join('./screenshots', sorted_files[0])
         os.remove(file_path)
 
+def setup_data_file():
+    try:
+        os.remove('real_data.txt')
+    except:
+        pass 
+
+def scroll_to_next_btn(action_chains):
+    last_time_element = get_last_time_element()
+    take_screenshot()
+    action_chains.move_to_element(last_time_element).scroll_by_amount(0, 200).perform()
+    take_screenshot()
+
 if __name__ == '__main__':
     try:
-        try:
-            os.remove('real_data.txt')
-        except:
-            pass
+        data_length = 0
+        setup_data_file()
         driver = webdriver.Chrome()
+        action_chains = ActionChains(driver, 100)
+
         driver.get(trip_com_q_string)
         decline_cookies()
-
         time.sleep(2)
 
         start = time.time()
 
-        for j in range(2900 // 8):
+        while data_length < 3000:
             times = get_times()
             prices = get_prices()
+
+            if len(times) < 1 or len(prices) < 1:
+                print('something happened to len time or prices')
+                continue
 
             for i in range(len(times)):
                 write_to_txt_file(times[i],prices[i])
 
+            scroll_to_next_btn(action_chains)
             click_next_btn()
-            time.sleep(0.5)
-            print(count_lines_in_txt_file())
+            time.sleep(0.3)
+            data_length = count_lines_in_txt_file()
+            print(data_length)
 
         print('-'*30)
         print(time.time() - start, 'secs')
-    except:
+        print('scrapper did a good job')
+    except Exception as err:
         file = "not-sound-1.wav"
         os.system("afplay " + file)
         print('Something unexpected happened')
+        print('This is what happened ', err)
+        traceback.print_exc()
 
     driver.quit()
